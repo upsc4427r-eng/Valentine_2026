@@ -17,12 +17,14 @@ body{
   text-align:center;
 }
 
+/* Main question */
 h1{
   font-size:3rem;
   color:white;
   text-shadow:0 0 25px white;
 }
 
+/* Buttons */
 .btn{
   position:absolute;
   padding:16px 40px;
@@ -30,6 +32,7 @@ h1{
   border:none;
   border-radius:16px;
   cursor:pointer;
+  transition:.15s;
 }
 
 #yes{
@@ -47,7 +50,7 @@ h1{
   top:60%;
 }
 
-/* hearts */
+/* Floating hearts */
 .heart{
   position:absolute;
   font-size:22px;
@@ -59,13 +62,14 @@ h1{
   to{transform:translateY(-10vh);}
 }
 
-/* popup */
+/* Small popup bubbles */
 .popup{
   position:absolute;
   background:white;
   padding:8px 14px;
   border-radius:14px;
   font-size:14px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.25);
   animation:fade 1s forwards;
 }
 
@@ -75,23 +79,38 @@ h1{
   100%{opacity:0}
 }
 
+/* Big message bubble */
 .bigMsg{
   position:absolute;
-  font-size:2.6rem;
+  top:22%;
+  left:50%;
+  transform:translateX(-50%);
+
+  font-size:3.2rem;
+  font-weight:bold;
+  font-family:"Trebuchet MS", cursive;
+
   color:white;
-  text-shadow:0 0 20px white;
+  background:#ff2e63;
+  padding:14px 30px;
+  border-radius:20px;
+
+  box-shadow:0 0 25px rgba(255,255,255,0.9);
   animation:pop .3s;
+  z-index:10;
 }
 
 @keyframes pop{
-  from{transform:scale(0)}
-  to{transform:scale(1)}
+  from{transform:translateX(-50%) scale(0)}
+  to{transform:translateX(-50%) scale(1)}
 }
 
+/* Yes result message */
 #loveMsg{
   display:none;
   font-size:3rem;
   color:white;
+  text-shadow:0 0 25px white;
 }
 </style>
 </head>
@@ -113,17 +132,42 @@ const question = document.getElementById("question");
 
 let attempts = 0;
 let popupLock = false;
-let escapeCooldown = false; // ⭐ prevents multiple counts
+let escapeCooldown = false;
 
+/* MANY funny lines */
 const funnyTexts = [
   "Nice try 😜",
   "Hehe can't catch me 😂",
   "Almosttt 🤭",
   "Too slow 😏",
-  "Press YES ❤️"
+  "Press YES ❤️",
+  "Arey yaar 😂",
+  "Stop chasing meee 😆",
+  "Say yes naaa 🥺",
+  "Itna attitude? 😏",
+  "Catch me if you can 🏃",
+  "Wrong button madam 😜",
+  "No option disabled 😂",
+  "Destiny says YES ❤️",
+  "Bas karo 😂",
+  "You really trying huh 🤭",
+  "Team YES only 😌",
+  "Dil se bolo YES ❤️",
+  "Arre arre arre 😆",
+  "Hearts only, no NO 😜",
+  "System error ❌",
+  "Button not available 😂",
+  "Try harder 😏",
+  "You can't escape love ❤️",
+  "Say yes warna… 😜",
+  "Smart girl chooses YES 😉",
+  "LOL nice attempt 🤣",
+  "Mission failed 😂",
+  "This button is shy 🙈",
+  "Click YES, be happy ❤️"
 ];
 
-/* YES */
+/* YES CLICK */
 yesBtn.onclick = () => {
   question.style.display="none";
   yesBtn.style.display="none";
@@ -132,10 +176,10 @@ yesBtn.onclick = () => {
   confetti();
 };
 
-/* Detect chase */
+/* Chase detection */
 document.addEventListener("mousemove",(e)=>{
 
-  if(escapeCooldown) return;  // ⭐ important
+  if(escapeCooldown) return;
 
   const rect = noBtn.getBoundingClientRect();
 
@@ -146,7 +190,7 @@ document.addEventListener("mousemove",(e)=>{
 
   if(dist < 120){
 
-    escapeCooldown = true; // count only once
+    escapeCooldown = true;
 
     attempts++;
 
@@ -158,12 +202,11 @@ document.addEventListener("mousemove",(e)=>{
       attempts = 0;
     }
 
-    // allow next count after short delay
     setTimeout(()=> escapeCooldown=false, 350);
   }
 });
 
-/* move */
+/* Move No button */
 function moveNo(){
   const x=Math.random()*(window.innerWidth-120);
   const y=Math.random()*(window.innerHeight-70);
@@ -171,7 +214,7 @@ function moveNo(){
   noBtn.style.top=y+"px";
 }
 
-/* popup */
+/* Small popup */
 function showPopup(x,y){
   if(popupLock) return;
 
@@ -191,19 +234,18 @@ function showPopup(x,y){
   },900);
 }
 
-/* big msg */
+/* Big message (3 seconds) */
 function bigMessage(text){
   const b=document.createElement("div");
   b.className="bigMsg";
   b.innerText=text;
-  b.style.top="40%";
-  b.style.left="30%";
+
   document.body.appendChild(b);
 
-  setTimeout(()=>b.remove(),1500);
+  setTimeout(()=>b.remove(),3000);
 }
 
-/* hearts */
+/* Floating hearts */
 setInterval(()=>{
   const h=document.createElement("div");
   h.className="heart";
@@ -213,7 +255,7 @@ setInterval(()=>{
   setTimeout(()=>h.remove(),6000);
 },350);
 
-/* confetti */
+/* Confetti */
 function confetti(){
   for(let i=0;i<60;i++){
     const h=document.createElement("div");
