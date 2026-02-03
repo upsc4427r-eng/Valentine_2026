@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Mitali ❤️</title>
+
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  height:100vh;
+  font-family:"Comic Sans MS", cursive;
+  background:linear-gradient(135deg,#ff758c,#ff7eb3,#ffd1dc);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+/* Title */
+h1{
+  font-size:3rem;
+  color:white;
+  text-shadow:0 0 25px white;
+}
+
+/* Buttons */
+.btn{
+  position:absolute;
+  padding:16px 40px;
+  font-size:20px;
+  border:none;
+  border-radius:16px;
+  cursor:pointer;
+  transition:0.2s ease;
+}
+
+#yes{
+  background:#ff2e63;
+  color:white;
+  left:45%;
+  top:60%;
+  box-shadow:0 0 25px #ff2e63;
+}
+
+#no{
+  background:#444;
+  color:white;
+  left:60%;
+  top:60%;
+}
+
+/* Floating hearts */
+.heart{
+  position:absolute;
+  font-size:22px;
+  opacity:0.7;
+  animation:float 6s linear forwards;
+}
+
+@keyframes float{
+  from{transform:translateY(100vh);}
+  to{transform:translateY(-10vh);}
+}
+
+/* Popup */
+.popup{
+  position:absolute;
+  background:white;
+  padding:8px 16px;
+  border-radius:14px;
+  font-size:14px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.25);
+  animation:fade 1.3s forwards;
+}
+
+@keyframes fade{
+  0%{opacity:0}
+  20%{opacity:1}
+  100%{opacity:0}
+}
+
+#loveMsg{
+  display:none;
+  font-size:3rem;
+  color:white;
+  text-shadow:0 0 25px white;
+}
+
+.attitude{
+  position:absolute;
+  font-size:2.5rem;
+  color:white;
+  animation:pop 1s;
+}
+
+@keyframes pop{
+  from{transform:scale(0)}
+  to{transform:scale(1)}
+}
+</style>
+</head>
+
+<body>
+
+<h1 id="question">Mitali ❤️<br>Will you be my Valentine?</h1>
+
+<button id="yes" class="btn">Yes 💕</button>
+<button id="no" class="btn">No 😢</button>
+
+<div id="loveMsg">YAYYY Mitali!! I love you sooo much ❤️🥰</div>
+
+<!-- MUSIC -->
+<audio id="music" autoplay loop>
+  <source src="until-i-found-you.mp3" type="audio/mp3">
+</audio>
+
+<script>
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+const question = document.getElementById("question");
+const msg = document.getElementById("loveMsg");
+const music = document.getElementById("music");
+
+let popupVisible=false;
+let noClicks=0;
+
+const funnyTexts=[
+  "Hehe nice try 😂",
+  "No escape 😜",
+  "Say YES already ❤️",
+  "Stop chasing me!",
+  "Destiny says YES 😏",
+  "Almost caught me 🤭",
+  "You can't press No 🤣"
+];
+
+/* MUSIC (mobile autoplay fix) */
+document.body.addEventListener("click",()=>music.play());
+
+/* YES CLICK */
+yesBtn.onclick=()=>{
+  question.style.display="none";
+  yesBtn.style.display="none";
+  noBtn.style.display="none";
+  msg.style.display="block";
+  confetti();
+};
+
+/* NO RUN AWAY */
+document.addEventListener("mousemove",(e)=>{
+  const rect=noBtn.getBoundingClientRect();
+
+  const dist=Math.hypot(
+    e.clientX-(rect.left+rect.width/2),
+    e.clientY-(rect.top+rect.height/2)
+  );
+
+  if(dist<130){
+    moveNo();
+    showPopup(e.clientX,e.clientY);
+  }
+});
+
+/* ALSO COUNT CLICKS */
+noBtn.onclick=()=>{
+  noClicks++;
+  moveNo();
+  showPopup(event.clientX,event.clientY);
+
+  if(noClicks>=5){
+    attitudeMode();
+    noClicks=0;
+  }
+};
+
+function moveNo(){
+  const x=Math.random()*(window.innerWidth-120);
+  const y=Math.random()*(window.innerHeight-70);
+  noBtn.style.left=x+"px";
+  noBtn.style.top=y+"px";
+}
+
+/* POPUP */
+function showPopup(x,y){
+  if(popupVisible) return;
+  popupVisible=true;
+
+  const p=document.createElement("div");
+  p.className="popup";
+  p.innerText=funnyTexts[Math.floor(Math.random()*funnyTexts.length)];
+  p.style.left=x+"px";
+  p.style.top=y+"px";
+  document.body.appendChild(p);
+
+  setTimeout(()=>{
+    p.remove();
+    popupVisible=false;
+  },1200);
+}
+
+/* ATTITUDE MODE */
+function attitudeMode(){
+  yesBtn.style.display="none";
+
+  const a=document.createElement("div");
+  a.className="attitude";
+  a.innerText="Attitude huh !! 😏";
+  a.style.top="40%";
+  a.style.left="35%";
+  document.body.appendChild(a);
+
+  setTimeout(()=>{
+    a.remove();
+    yesBtn.style.display="block";
+    yesBtn.style.animation="pop 0.6s";
+  },2000);
+}
+
+/* HEARTS */
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="❤️";
+  h.style.left=Math.random()*100+"vw";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+},400);
+
+/* CONFETTI */
+function confetti(){
+  for(let i=0;i<70;i++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.innerHTML="💖";
+    h.style.left=Math.random()*100+"vw";
+    h.style.fontSize="28px";
+    document.body.appendChild(h);
+  }
+}
+</script>
+
+</body>
+</html>
