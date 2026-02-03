@@ -1,109 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Mitali ❤️</title>
+
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  height:100vh;
+  font-family:"Comic Sans MS", cursive;
+  background:linear-gradient(135deg,#ff758c,#ff7eb3,#ffd1dc);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+
+h1{
+  font-size:3rem;
+  color:white;
+  text-shadow:0 0 25px white;
+}
+
+.btn{
+  position:absolute;
+  padding:16px 40px;
+  font-size:20px;
+  border:none;
+  border-radius:16px;
+  cursor:pointer;
+}
+
+#yes{
+  background:#ff2e63;
+  color:white;
+  left:45%;
+  top:60%;
+  box-shadow:0 0 25px #ff2e63;
+}
+
+#no{
+  background:#444;
+  color:white;
+  left:60%;
+  top:60%;
+}
+
+/* hearts */
+.heart{
+  position:absolute;
+  font-size:22px;
+  animation:float 6s linear forwards;
+}
+
+@keyframes float{
+  from{transform:translateY(100vh);}
+  to{transform:translateY(-10vh);}
+}
+
+/* popup */
+.popup{
+  position:absolute;
+  background:white;
+  padding:8px 14px;
+  border-radius:14px;
+  font-size:14px;
+  animation:fade 1s forwards;
+}
+
+@keyframes fade{
+  0%{opacity:0}
+  20%{opacity:1}
+  100%{opacity:0}
+}
+
+.bigMsg{
+  position:absolute;
+  font-size:2.6rem;
+  color:white;
+  text-shadow:0 0 20px white;
+  animation:pop .3s;
+}
+
+@keyframes pop{
+  from{transform:scale(0)}
+  to{transform:scale(1)}
+}
+
+#loveMsg{
+  display:none;
+  font-size:3rem;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<h1 id="question">Mitali ❤️<br>Will you be my Valentine?</h1>
+
+<button id="yes" class="btn">Yes 💕</button>
+<button id="no" class="btn">No 😢</button>
+
+<div id="loveMsg">YAYYY Mitali!! I love you sooo much ❤️🥰</div>
+
+<script>
 const yesBtn = document.getElementById("yes");
 const noBtn = document.getElementById("no");
-const question = document.getElementById("question");
 const msg = document.getElementById("loveMsg");
-const music = document.getElementById("music");
+const question = document.getElementById("question");
 
-let popupVisible = false;
-let attempts = 0; // count chases not clicks
+let attempts = 0;
+let popupLock = false;
+let escapeCooldown = false; // ⭐ prevents multiple counts
 
 const funnyTexts = [
   "Nice try 😜",
-  "Hehe can't catch me!",
-  "Nope nope nope 😂",
-  "Say YES already ❤️",
+  "Hehe can't catch me 😂",
+  "Almosttt 🤭",
   "Too slow 😏",
-  "Almost caught me 🤭"
+  "Press YES ❤️"
 ];
 
-/* MUSIC FIX FOR MOBILE */
-document.body.addEventListener("click", () => music.play());
-
-/* YES CLICK */
+/* YES */
 yesBtn.onclick = () => {
-  question.style.display = "none";
-  yesBtn.style.display = "none";
-  noBtn.style.display = "none";
-  msg.style.display = "block";
+  question.style.display="none";
+  yesBtn.style.display="none";
+  noBtn.style.display="none";
+  msg.style.display="block";
   confetti();
 };
 
-/* NO RUN AWAY + COUNT ATTEMPTS */
-document.addEventListener("mousemove", (e) => {
+/* Detect chase */
+document.addEventListener("mousemove",(e)=>{
+
+  if(escapeCooldown) return;  // ⭐ important
+
   const rect = noBtn.getBoundingClientRect();
 
   const dist = Math.hypot(
-    e.clientX - (rect.left + rect.width/2),
-    e.clientY - (rect.top + rect.height/2)
+    e.clientX-(rect.left+rect.width/2),
+    e.clientY-(rect.top+rect.height/2)
   );
 
-  if (dist < 130) {
+  if(dist < 120){
 
-    attempts++;   // ⭐ count attempts
+    escapeCooldown = true; // count only once
+
+    attempts++;
 
     moveNo();
-    showPopup(e.clientX, e.clientY);
+    showPopup(e.clientX,e.clientY);
 
-    if (attempts >= 5) {
-      attitudeMode();
+    if(attempts >= 5){
+      bigMessage("Single rehna hai kya 😜");
       attempts = 0;
     }
+
+    // allow next count after short delay
+    setTimeout(()=> escapeCooldown=false, 350);
   }
 });
 
-/* MOVE BUTTON */
+/* move */
 function moveNo(){
-  const x = Math.random() * (window.innerWidth - 120);
-  const y = Math.random() * (window.innerHeight - 70);
-  noBtn.style.left = x + "px";
-  noBtn.style.top = y + "px";
+  const x=Math.random()*(window.innerWidth-120);
+  const y=Math.random()*(window.innerHeight-70);
+  noBtn.style.left=x+"px";
+  noBtn.style.top=y+"px";
 }
 
-/* POPUP (one at a time) */
+/* popup */
 function showPopup(x,y){
-  if(popupVisible) return;
+  if(popupLock) return;
 
-  popupVisible = true;
+  popupLock=true;
 
-  const p = document.createElement("div");
-  p.className = "popup";
-  p.innerText = funnyTexts[Math.floor(Math.random()*funnyTexts.length)];
-  p.style.left = x + "px";
-  p.style.top = y + "px";
+  const p=document.createElement("div");
+  p.className="popup";
+  p.innerText=funnyTexts[Math.floor(Math.random()*funnyTexts.length)];
+  p.style.left=x+"px";
+  p.style.top=y+"px";
 
   document.body.appendChild(p);
 
   setTimeout(()=>{
     p.remove();
-    popupVisible=false;
-  },1000);
+    popupLock=false;
+  },900);
 }
 
-/* YES DISAPPEAR MODE */
-function attitudeMode(){
+/* big msg */
+function bigMessage(text){
+  const b=document.createElement("div");
+  b.className="bigMsg";
+  b.innerText=text;
+  b.style.top="40%";
+  b.style.left="30%";
+  document.body.appendChild(b);
 
-  yesBtn.style.display = "none";
-
-  const a = document.createElement("div");
-  a.className = "attitude";
-  a.innerText = "Attitude huh !! 😏";
-  a.style.top = "40%";
-  a.style.left = "35%";
-
-  document.body.appendChild(a);
-
-  setTimeout(()=>{
-    a.remove();
-
-    yesBtn.style.display = "block";
-    yesBtn.style.transform = "scale(1.4)";
-    setTimeout(()=> yesBtn.style.transform="scale(1)", 200);
-  }, 2000);
+  setTimeout(()=>b.remove(),1500);
 }
 
-/* CONFETTI */
+/* hearts */
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="❤️";
+  h.style.left=Math.random()*100+"vw";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+},350);
+
+/* confetti */
 function confetti(){
-  for(let i=0;i<70;i++){
+  for(let i=0;i<60;i++){
     const h=document.createElement("div");
     h.className="heart";
     h.innerHTML="💖";
@@ -111,3 +223,7 @@ function confetti(){
     document.body.appendChild(h);
   }
 }
+</script>
+
+</body>
+</html>
